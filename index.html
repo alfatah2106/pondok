@@ -191,8 +191,9 @@
                             <select id="telat-jenis" class="input-field"></select>
                         </div>
                         <div>
-                            <label class="label-text">Gedung</label>
-                            <select id="telat-gedung" class="input-field" onchange="clearSearch()"></select>
+                            <select id="telat-gedung" class="input-field" onchange="clearSearch()">
+                                <option value="">--Pilih Gedung--</option>
+                            </select>
                         </div>
                     </div>
 
@@ -357,7 +358,7 @@
                 populateSelect('telat-jenis', state.dropdowns.jenis_keterlambatan);
                 populateSelect('pel-ket', state.dropdowns.pelanggaran);
                 populateSelect('daur-ket-bulk', state.dropdowns.keterangan);
-                populateSelect('telat-jenis', state.dropdowns.keterangan);
+                populateSelect('telat-gedung', state.dropdowns.gedung);
 
                 // 2. Load Santri Syuqoh (untuk Konseling & Daur)
                 const resSantri = await fetch(`${API_URL}?action=get_santri_by_syuqoh&syuqoh=${state.user.syuqoh}`);
