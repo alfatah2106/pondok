@@ -10,9 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
-        .nav-item.active { background-color: #eff6ff; color: #2563eb; border-right: 3px solid #2563eb; }
+        .sidebar {transition: transform 0.3s ease-in-out;}
+        .tab-content {display: none; }/* Default semua sembunyi */
+        .tab-content.active {display: block !important;} /* Muncul jika ada class active */
+        .nav-item.active { background-color: #eff6ff;color: #2563eb;}
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         /* Hide scrollbar for clean UI */
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -124,7 +125,7 @@
             </section>
 
             <!-- 2. KONSELING -->
-            <section id="tab-konseling" class="tab-content space-y-4">
+            <section id="tab-konseling" class="tab-content hidden space-y-4">
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                     <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2"><i data-lucide="heart-handshake" class="w-4 h-4"></i> Form Konseling</h3>
                     <p class="text-xs text-gray-400 mb-4">Filter otomatis berdasarkan Syuqoh Anda</p>
@@ -145,7 +146,7 @@
             </section>
 
             <!-- 3. PENGAWASAN -->
-            <section id="tab-pengawasan" class="tab-content space-y-4">
+            <section id="tab-pengawasan" class="tab-content hidden space-y-4">
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                     <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2"><i data-lucide="eye" class="w-4 h-4"></i> Pengawasan Daur</h3>
                     <p class="text-xs text-gray-400 mb-4">List Musyrif di Gedung Anda</p>
@@ -162,7 +163,7 @@
             </section>
 
             <!-- 4. LAPORAN DAUR -->
-            <section id="tab-daur" class="tab-content space-y-4">
+            <section id="tab-daur" class="tab-content hidden space-y-4">
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                     <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2"><i data-lucide="check-square" class="w-4 h-4"></i> Checklist Daur Santri</h3>
                     <p class="text-xs text-gray-400 mb-4">Santri di Syuqoh Anda (Urut Kamar)</p>
@@ -185,7 +186,7 @@
             </section>
 
             <!-- 5. KETERLAMBATAN -->
-            <section id="tab-terlambat" class="tab-content space-y-4">
+            <section id="tab-terlambat" class="tab-content hidden space-y-4">
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                     <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4"></i> Input Keterlambatan</h3>
                     
@@ -214,7 +215,7 @@
             </section>
 
             <!-- 6. PELANGGARAN -->
-            <section id="tab-pelanggaran" class="tab-content space-y-4">
+            <section id="tab-pelanggaran" class="tab-content hidden space-y-4">
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm border-l-4 border-l-red-500">
                     <h3 class="font-bold text-red-700 mb-4 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Catat Pelanggaran</h3>
                     
@@ -649,16 +650,57 @@
         function clearSearch() { state.cart.telat = []; renderCart('telat'); }
 
         // --- CORE HELPERS ---
-        function nav(tab) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(`tab-${tab}`).classList.add('active');
-            document.getElementById(`nav-${tab}`).classList.add('active');
+        // A. Fungsi Buka-Tutup Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
             
-            // Mobile Title Update
-            document.getElementById('mobile-title').innerText = tab.charAt(0).toUpperCase() + tab.slice(1);
+            // Cek apakah sedang tersembunyi
+            const isHidden = sidebar.classList.contains('hidden');
+            
+            if (isHidden) {
+                sidebar.classList.remove('hidden', '-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('hidden', '-translate-x-full');
+                overlay.classList.add('hidden');
+            }
         }
-
+        
+        // B. Fungsi Navigasi Tab (Versi Perbaikan)
+        function nav(tab) {
+            // 1. Reset semua section konten
+            document.querySelectorAll('.tab-content').forEach(section => {
+                section.classList.remove('active');
+                // section.style.display = 'none'; // Jika tidak pakai class CSS display:none
+            });
+        
+            // 2. Tampilkan section yang dituju
+            const targetSection = document.getElementById(`tab-${tab}`);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+        
+            // 3. Update warna tombol navigasi
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const targetBtn = document.getElementById(`nav-${tab}`);
+            if (targetBtn) {
+                targetBtn.classList.add('active');
+            }
+        
+            // 4. Update Judul di Header Mobile
+            const titleEl = document.getElementById('mobile-title');
+            if (titleEl) {
+                titleEl.innerText = tab.charAt(0).toUpperCase() + tab.slice(1);
+            }
+        
+            // 5. TUTUP SIDEBAR jika sedang di mobile (layar < 768px)
+            if (window.innerWidth < 768) {
+                toggleSidebar();
+            }
+        }
         async function postData(action, payload, callback) {
             setLoading(true);
             payload.action = action;
@@ -741,27 +783,7 @@
                 );
             });
         }
-
-        function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
     
-    // Toggle class untuk menampilkan/menyembunyikan
-    if (sidebar.classList.contains('hidden')) {
-        sidebar.classList.remove('hidden');
-        sidebar.classList.remove('-translate-x-full');
-        overlay.classList.remove('hidden');
-    } else {
-        sidebar.classList.add('hidden');
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-        }
-    }
-    
-    // Tambahkan ini di fungsi nav() Anda agar saat menu diklik, sidebar otomatis tertutup di mobile
-    function nav(target) {
-        // ... kode nav Anda yang sudah ada ...
-        
         if (window.innerWidth < 768) { // Jika ukuran mobile
             toggleSidebar();
         }
