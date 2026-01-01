@@ -381,28 +381,7 @@
         }
 
         // --- LOGIC PER TAB ---
-
-        // 1. ABSENSI
-        async function submitAbsensi() {
-            const ket = val('abs-ket');
-            const foto = getImgSrc('img-abs');
-            if(!ket || !foto) return showToast('error', 'Isi keterangan & foto');
-
-            setLoading(true);
-            const loc = await getLoc();
-            
-            postData('save_absensi', {
-                email: state.user.email,
-                nama: state.user.nama,
-                keterangan: ket,
-                foto: foto,
-                lokasi: loc
-            }, () => {
-                val('abs-ket', '');
-                resetCam('img-abs', 'vid-abs', 'cam-placeholder-abs');
-            });
-        }
-        
+      
         // 2. KONSELING
         function initKonseling() {
             const kamars = [...new Set(state.santriCache.map(s => s.kamar))].sort();
