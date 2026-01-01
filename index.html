@@ -279,25 +279,26 @@
             
         function restoreSession() {
         const savedUser = localStorage.getItem('pondok_user_session');
-    
-        if (savedUser) {
-            try {
-                const parsed = JSON.parse(savedUser);
-                if (parsed.email && parsed.nama) {
-                    state.user = parsed;
-                    document.getElementById('auth-overlay').classList.add('hidden');
-                    updateUIUser();
-                    loadInitialData();
-                    return;
-                }
-                 } catch (e) {
-                            localStorage.removeItem('pondok_user_session');
-                        }
+        
+            if (savedUser) {
+                try {
+                    const parsed = JSON.parse(savedUser);
+                    if (parsed.email) {   // ⬅️ FIX UTAMA
+                        state.user = parsed;
+        
+                        document.getElementById('auth-overlay').classList.add('hidden');
+                        updateUIUser();
+                        loadInitialData();
+                        return;
                     }
-                
-                    // jika TIDAK ada session valid
-                    document.getElementById('auth-overlay').classList.remove('hidden');
+                } catch (e) {
+                    localStorage.removeItem('pondok_user_session');
                 }
+            }
+        
+            document.getElementById('auth-overlay').classList.remove('hidden');
+        }
+
         function submitAbsensi() {
             if (!isLoggedIn()) {
                 showToast('error', 'Silakan login dulu');
