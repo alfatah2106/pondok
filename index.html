@@ -124,50 +124,6 @@
     </main>
 
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            const isClosed = sidebar.classList.contains('-translate-x-full');
-
-            if (isClosed) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            }
-        }
-
-        // Update fungsi nav Anda agar menutup sidebar di mobile
-        function nav(tab) {
-            // 1. Logika Tab (Sembunyikan semua, munculkan satu)
-            document.querySelectorAll('.tab-content').forEach(t => {
-                t.classList.remove('active');
-                t.classList.add('hidden');
-            });
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-            const targetTab = document.getElementById(`tab-${tab}`);
-            if (targetTab) {
-                targetTab.classList.add('active');
-                targetTab.classList.remove('hidden');
-            }
-            
-            const targetNav = document.getElementById(`nav-${tab}`);
-            if (targetNav) targetNav.classList.add('active');
-
-            // 2. Update Title
-            document.getElementById('mobile-title').innerText = tab.charAt(0).toUpperCase() + tab.slice(1);
-
-            // 3. Tutup Sidebar di Mobile
-            if (window.innerWidth < 768) {
-                toggleSidebar();
-            }
-        }
-    </script>
-</body>
-
-    <script>
         // --- KONFIGURASI (GANTI URL WEB APP ANDA DI SINI) ---
         const API_URL = "https://script.google.com/macros/s/AKfycbyZUCDpFskmp3JtrjYUcHDGdJ9SsZ_V6XhxXWVcEhREMU1K3zl8heM8eWu4gZWtBiiqaw/exec";
         const CLIENT_ID = "142276774829-q7b6vicbq1hm1ltng7itehietn03l119.apps.googleusercontent.com";
