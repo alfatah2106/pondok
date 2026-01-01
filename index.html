@@ -22,7 +22,7 @@
 <body class="bg-gray-50 text-gray-800 h-screen overflow-hidden flex flex-col md:flex-row">
 
     <!-- LOGIN OVERLAY -->
-    <div id="auth-overlay" class="fixed inset-0 z-50 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6">
+    <div id="auth-overlay" class="fixed inset-0 z-50 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 transition-all duration-300">
         <div class="bg-white p-8 rounded-2xl shadow-2xl border border-gray-100 max-w-sm w-full text-center">
             <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i data-lucide="shield-check" class="w-8 h-8"></i>
@@ -77,7 +77,7 @@
         </nav>
         
         <div class="p-4 border-t border-gray-100">
-            <button onclick="location.reload()" class="w-full flex items-center justify-center gap-2 p-2 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors">
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 p-2 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors">
                 <i data-lucide="log-out" class="w-3 h-3"></i> KELUAR
             </button>
         </div>
@@ -280,9 +280,26 @@
             cart: { telat: [], pel: [], daur: [] }
         };
 
+        // --- NEW: AUTO-LOGIN CHECK ---
         window.onload = () => {
             initAuth();
             lucide.createIcons();
+            
+            // Cek Session Lokal
+            const savedUser = localStorage.getItem('pondok_user_session');
+            if (savedUser) {
+                try {
+                    const parsed = JSON.parse(savedUser);
+                    // Validasi sederhana (bisa ditambah timestamp check)
+                    if (parsed.email && parsed.nama) {
+                        state.user = parsed;
+                        document.getElementById('auth-overlay').classList.add('hidden');
+                        updateUIUser();
+                        loadInitialData();
+                        showToast('success', 'Selamat datang kembali!');
+                    }
+                } catch (e) { localStorage.removeItem('pondok_user_session'); }
+            }
         };
 
         // --- AUTH & INITIALIZATION ---
@@ -296,11 +313,22 @@
             const payload = JSON.parse(atob(res.credential.split('.')[1]));
             
             try {
-                const apiRes = await fetch(`${API_URL}?action=get_profile&email=${payload.email}`);
+                // Pass picture dari Google Sign In langsung ke backend jika perlu, 
+                // atau gunakan yang dari payload untuk frontend
+                const apiRes = await fetch(`${API_URL}?action=get_profile&email=${payload.email}&picture=${encodeURIComponent(payload.picture)}`);
                 const profile = await apiRes.json();
                 
                 if (profile.status === 'success') {
-                    state.user = { ...payload, ...profile };
+                    // Gabungkan data dari Google (picture) dan Database (gedung, syuqoh)
+                    state.user = { 
+                        ...payload, 
+                        ...profile,
+                        picture: payload.picture // Prioritaskan foto google terbaru
+                    };
+                    
+                    // --- NEW: SAVE SESSION ---
+                    localStorage.setItem('pondok_user_session', JSON.stringify(state.user));
+
                     document.getElementById('auth-overlay').classList.add('hidden');
                     updateUIUser();
                     loadInitialData();
@@ -308,6 +336,12 @@
                     showToast('error', 'Email tidak terdaftar di DB Ustadz');
                 }
             } catch (e) { showToast('error', 'Gagal koneksi server'); }
+        }
+
+        function logout() {
+            // --- NEW: CLEAR SESSION ---
+            localStorage.removeItem('pondok_user_session');
+            location.reload();
         }
 
         function updateUIUser() {
@@ -338,7 +372,7 @@
                 initDaur();
                 initPengawasan();
 
-                showToast('success', 'Data berhasil dimuat');
+                // showToast('success', 'Data berhasil dimuat'); // Optional silent load
             } catch (e) { console.error(e); }
         }
 
