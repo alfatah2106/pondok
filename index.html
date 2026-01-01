@@ -294,9 +294,21 @@
 
         // --- AUTH & INITIALIZATION ---
         function initAuth() {
-            google.accounts.id.initialize({ client_id: CLIENT_ID, callback: handleLogin });
-            google.accounts.id.renderButton(document.getElementById("google-btn-container"), { theme: "outline", size: "large" });
-        }
+                if (!window.google || !google.accounts || !google.accounts.id) {
+                    setTimeout(initAuth, 100);
+                    return;
+                }
+
+                google.accounts.id.initialize({
+                    client_id: CLIENT_ID,
+                    callback: handleLogin
+                });
+
+                google.accounts.id.renderButton(
+                    document.getElementById("google-btn-container"),
+                    { theme: "outline", size: "large" }
+                );
+            }
 
         async function handleLogin(res) {
             showToast('loading', 'Sedang masuk...');
@@ -373,8 +385,8 @@
         async function submitAbsensi() {
             const ket = val('abs-ket');
             const foto = getImgSrc('img-function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('-translate-x-full');
-}abs');
+        document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        }abs');
             if(!ket || !foto) return showToast('error', 'Isi keterangan & foto');
 
             setLoading(true);
