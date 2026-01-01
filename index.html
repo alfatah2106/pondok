@@ -304,8 +304,27 @@
                 showToast('error', 'Silakan login dulu');
                 return;
             }
-            ...
+        
+            const ket = val('abs-ket');
+            const foto = getImgSrc('img-abs');
+            if (!ket || !foto) return showToast('error', 'Isi keterangan & foto');
+        
+            setLoading(true);
+            getLoc().then(loc => {
+                postData('save_absensi', {
+                    email: state.user.email,
+                    nama: state.user.nama || state.user.name,
+                    keterangan: ket,
+                    foto: foto,
+                    lokasi: loc
+                }, () => {
+                    val('abs-ket', '');
+                    resetCam('img-abs', 'vid-abs', 'cam-placeholder-abs');
+                    setLoading(false);
+                });
+            });
         }
+
 
         // --- AUTH & INITIALIZATION ---
         function isLoggedIn() {
