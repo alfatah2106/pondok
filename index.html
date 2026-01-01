@@ -293,6 +293,10 @@
         };
 
         // --- AUTH & INITIALIZATION ---
+        function isLoggedIn() {
+            return !!(state.user && state.user.email);
+        }
+
         function initAuth() {
                 if (!window.google || !google.accounts || !google.accounts.id) {
                     setTimeout(initAuth, 100);
