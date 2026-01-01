@@ -33,50 +33,55 @@
         </div>
     </div>
 
-    <!-- SIDEBAR (MINIMIZABLE) -->
-    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-64 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
-        <div class="p-5 border-b border-gray-100 flex items-center gap-3 justify-between">
+    <!-- SIDEBAR -->
+    <aside class="w-full md:w-64 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col z-20">
+        <div class="p-5 border-b border-gray-100 flex items-center gap-3">
+            <div class="bg-blue-600 text-white p-1.5 rounded-lg">
+                <i data-lucide="layout-grid" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h2 class="font-bold text-gray-900 text-sm">Dashboard</h2>
+                <p class="text-[10px] text-gray-500">Sistem Monitoring</p>
+            </div>
+        </div>
+
+        <div class="p-4 bg-gray-50 border-b border-gray-100">
             <div class="flex items-center gap-3">
-                <div class="bg-blue-600 text-white p-1.5 rounded-lg">
-                    <i data-lucide="layout-grid" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h2 class="font-bold text-gray-900 text-sm">Dashboard</h2>
-                    <p class="text-[10px] text-gray-500">Sistem Monitoring</p>
+                <img id="user-photo" src="" class="w-9 h-9 rounded-full border border-white shadow-sm bg-gray-200 object-cover">
+                <div class="overflow-hidden">
+                    <p id="user-name" class="font-semibold text-xs text-gray-900 truncate">Memuat...</p>
+                    <p id="user-syuqoh" class="text-[10px] text-blue-600 font-medium uppercase tracking-wider">...</p>
                 </div>
             </div>
-            <button onclick="toggleSidebar()" class="md:hidden">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
         </div>
 
         <nav class="flex-1 overflow-y-auto p-3 space-y-1">
-            <button onclick="nav('absensi'); toggleSidebar()" id="nav-absensi" class="nav-item active w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
+            <button onclick="nav('absensi')" id="nav-absensi" class="nav-item active w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                 <i data-lucide="user-check" class="w-4 h-4"></i> Absensi
             </button>
-            <button onclick="nav('konseling'); toggleSidebar()" id="nav-konseling" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
+            <button onclick="nav('konseling')" id="nav-konseling" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                 <i data-lucide="heart-handshake" class="w-4 h-4"></i> Konseling
             </button>
-            <button onclick="nav('pengawasan'); toggleSidebar()" id="nav-pengawasan" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
+            <button onclick="nav('pengawasan')" id="nav-pengawasan" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                 <i data-lucide="eye" class="w-4 h-4"></i> Pengawasan
             </button>
-            <button onclick="nav('daur'); toggleSidebar()" id="nav-daur" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
+            <button onclick="nav('daur')" id="nav-daur" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                 <i data-lucide="clipboard-list" class="w-4 h-4"></i> Laporan Daur
             </button>
-            <button onclick="nav('terlambat'); toggleSidebar()" id="nav-terlambat" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
+            <button onclick="nav('terlambat')" id="nav-terlambat" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                 <i data-lucide="clock" class="w-4 h-4"></i> Keterlambatan
             </button>
-            <button onclick="nav('pelanggaran'); toggleSidebar()" id="nav-pelanggaran" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50">
+            <button onclick="nav('pelanggaran')" id="nav-pelanggaran" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
                 <i data-lucide="alert-triangle" class="w-4 h-4"></i> Pelanggaran
             </button>
         </nav>
-    </aside>
 
-    <!-- HEADER MOBILE -->
-    <header class="bg-white h-14 border-b border-gray-200 flex items-center px-4 justify-between sticky top-0 z-20 md:hidden">
-        <button onclick="toggleSidebar()"><i data-lucide="menu" class="w-5 h-5"></i></button>
-        <span class="font-bold" id="mobile-title">Absensi</span>
-    </header>
+        <div class="p-4 border-t border-gray-100">
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 p-2 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors">
+                <i data-lucide="log-out" class="w-3 h-3"></i> KELUAR
+            </button>
+        </div>
+    </aside>
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto bg-gray-50 relative">
@@ -274,80 +279,29 @@
         window.onload = () => {
             initAuth();
             lucide.createIcons();
-            restoreSession();
-            };
-            
-        function restoreSession() {
-        const savedUser = localStorage.getItem('pondok_user_session');
-        
+
+            // Cek Session Lokal
+            const savedUser = localStorage.getItem('pondok_user_session');
             if (savedUser) {
                 try {
                     const parsed = JSON.parse(savedUser);
-                    if (parsed.email) {   // ⬅️ FIX UTAMA
+                    // Validasi sederhana (bisa ditambah timestamp check)
+                    if (parsed.email && parsed.nama) {
                         state.user = parsed;
-        
                         document.getElementById('auth-overlay').classList.add('hidden');
                         updateUIUser();
                         loadInitialData();
-                        return;
+                        showToast('success', 'Selamat datang kembali!');
                     }
-                } catch (e) {
-                    localStorage.removeItem('pondok_user_session');
-                }
+                } catch (e) { localStorage.removeItem('pondok_user_session'); }
             }
-        
-            document.getElementById('auth-overlay').classList.remove('hidden');
-        }
-
-        function submitAbsensi() {
-            if (!isLoggedIn()) {
-                showToast('error', 'Silakan login dulu');
-                return;
-            }
-        
-            const ket = val('abs-ket');
-            const foto = getImgSrc('img-abs');
-            if (!ket || !foto) return showToast('error', 'Isi keterangan & foto');
-        
-            setLoading(true);
-            getLoc().then(loc => {
-                postData('save_absensi', {
-                    email: state.user.email,
-                    nama: state.user.nama || state.user.name,
-                    keterangan: ket,
-                    foto: foto,
-                    lokasi: loc
-                }, () => {
-                    val('abs-ket', '');
-                    resetCam('img-abs', 'vid-abs', 'cam-placeholder-abs');
-                    setLoading(false);
-                });
-            });
-        }
-
+        };
 
         // --- AUTH & INITIALIZATION ---
-        function isLoggedIn() {
-            return !!(state.user && state.user.email);
-        }
-
         function initAuth() {
-                if (!window.google || !google.accounts || !google.accounts.id) {
-                    setTimeout(initAuth, 100);
-                    return;
-                }
-
-                google.accounts.id.initialize({
-                    client_id: CLIENT_ID,
-                    callback: handleLogin
-                });
-
-                google.accounts.id.renderButton(
-                    document.getElementById("google-btn-container"),
-                    { theme: "outline", size: "large" }
-                );
-            }
-        console.log(window.google)
+            google.accounts.id.initialize({ client_id: CLIENT_ID, callback: handleLogin });
+            google.accounts.id.renderButton(document.getElementById("google-btn-container"), { theme: "outline", size: "large" });
+        }
 
         async function handleLogin(res) {
             showToast('loading', 'Sedang masuk...');
@@ -380,11 +334,10 @@
         }
 
         function logout() {
+            // --- NEW: CLEAR SESSION ---
             localStorage.removeItem('pondok_user_session');
-            state.user = null;
-            document.getElementById('auth-overlay').classList.remove('hidden');
+            location.reload();
         }
-
 
         function updateUIUser() {
             document.getElementById('user-name').innerText = state.user.nama;
@@ -421,7 +374,6 @@
 
         // --- LOGIC PER TAB ---
 
-        
         // 1. ABSENSI
         async function submitAbsensi() {
             const ket = val('abs-ket');
@@ -430,7 +382,7 @@
 
             setLoading(true);
             const loc = await getLoc();
-            
+
             postData('save_absensi', {
                 email: state.user.email,
                 nama: state.user.nama,
@@ -442,7 +394,7 @@
                 resetCam('img-abs', 'vid-abs', 'cam-placeholder-abs');
             });
         }
-        
+
         // 2. KONSELING
         function initKonseling() {
             const kamars = [...new Set(state.santriCache.map(s => s.kamar))].sort();
@@ -784,9 +736,6 @@
                     () => resolve("Lokasi tidak dizinkan")
                 );
             });
-        }
-        function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('-translate-x-full');
         }
     </script>
 </body>
