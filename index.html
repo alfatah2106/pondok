@@ -374,10 +374,11 @@
         }
 
         function logout() {
-            // --- NEW: CLEAR SESSION ---
             localStorage.removeItem('pondok_user_session');
-            location.reload();
+            state.user = null;
+            document.getElementById('auth-overlay').classList.remove('hidden');
         }
+
 
         function updateUIUser() {
             document.getElementById('user-name').innerText = state.user.nama;
