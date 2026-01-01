@@ -275,50 +275,36 @@
             initAuth();
             lucide.createIcons();
             restoreSession();
-            if (!isLoggedIn()) {
-                document.getElementById('auth-overlay').classList.remove('hidden');
-            } else {
-                document.getElementById('auth-overlay').classList.add('hidden');
-            }
-
-
-            // Cek Session Lokal
-            const savedUser = localStorage.getItem('pondok_user_session');
-            if (savedUser) {
-                try {
-                    const parsed = JSON.parse(savedUser);
-                    // Validasi sederhana (bisa ditambah timestamp check)
-                    if (parsed.email && parsed.nama) {
-                        state.user = parsed;
-                        document.getElementById('auth-overlay').classList.add('hidden');
-                        updateUIUser();
-                        loadInitialData();
-                        showToast('success', 'Selamat datang kembali!');
-                    }
-                } catch (e) { localStorage.removeItem('pondok_user_session'); }
-            }
-        };
+            };
+            
         function restoreSession() {
-    const savedUser = localStorage.getItem('pondok_user_session');
-
-    if (savedUser) {
-        try {
-            const parsed = JSON.parse(savedUser);
-            if (parsed.email && parsed.nama) {
-                state.user = parsed;
-                document.getElementById('auth-overlay').classList.add('hidden');
-                updateUIUser();
-                loadInitialData();
+        const savedUser = localStorage.getItem('pondok_user_session');
+    
+        if (savedUser) {
+            try {
+                const parsed = JSON.parse(savedUser);
+                if (parsed.email && parsed.nama) {
+                    state.user = parsed;
+                    document.getElementById('auth-overlay').classList.add('hidden');
+                    updateUIUser();
+                    loadInitialData();
+                    return;
+                }
+                 } catch (e) {
+                            localStorage.removeItem('pondok_user_session');
+                        }
+                    }
+                
+                    // jika TIDAK ada session valid
+                    document.getElementById('auth-overlay').classList.remove('hidden');
+                }
+        function submitAbsensi() {
+            if (!isLoggedIn()) {
+                showToast('error', 'Silakan login dulu');
                 return;
             }
-             } catch (e) {
-                        localStorage.removeItem('pondok_user_session');
-                    }
-                }
-            
-                // jika TIDAK ada session valid
-                document.getElementById('auth-overlay').classList.remove('hidden');
-            }
+            ...
+        }
 
         // --- AUTH & INITIALIZATION ---
         function isLoggedIn() {
