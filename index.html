@@ -274,6 +274,7 @@
         window.onload = () => {
             initAuth();
             lucide.createIcons();
+            restoreSession();
             if (!isLoggedIn()) {
                 document.getElementById('auth-overlay').classList.remove('hidden');
             } else {
@@ -297,6 +298,27 @@
                 } catch (e) { localStorage.removeItem('pondok_user_session'); }
             }
         };
+        function restoreSession() {
+    const savedUser = localStorage.getItem('pondok_user_session');
+
+    if (savedUser) {
+        try {
+            const parsed = JSON.parse(savedUser);
+            if (parsed.email && parsed.nama) {
+                state.user = parsed;
+                document.getElementById('auth-overlay').classList.add('hidden');
+                updateUIUser();
+                loadInitialData();
+                return;
+            }
+             } catch (e) {
+                        localStorage.removeItem('pondok_user_session');
+                    }
+                }
+            
+                // jika TIDAK ada session valid
+                document.getElementById('auth-overlay').classList.remove('hidden');
+            }
 
         // --- AUTH & INITIALIZATION ---
         function isLoggedIn() {
