@@ -94,12 +94,12 @@
                 
                 <!-- Tab Absensi -->
                 <section id="tab-absensi" class="tab-content active space-y-6">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                    <div id="form-absensi" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
                         <label class="block text-sm font-bold text-gray-700 mb-2">Keterangan Kehadiran</label>
-                        <select id="absensi-ket" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl mb-4 outline-none">
+                        <select id="absensi-ket" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl mb-4 outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">-- Menunggu Data --</option>
                         </select>
-                        <!-- Kamera logic sama seperti sebelumnya -->
+                        
                         <div class="space-y-4">
                             <div class="aspect-video bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center border-2 border-dashed border-gray-300 relative">
                                 <video id="video-absensi" class="hidden w-full h-full object-cover"></video>
@@ -110,21 +110,21 @@
                                 </div>
                             </div>
                             <div class="flex gap-2">
-                                <button onclick="startCamera('video-absensi', 'cam-placeholder-absensi')" class="flex-1 bg-gray-800 text-white py-3 rounded-xl text-sm font-bold">Buka Kamera</button>
-                                <button onclick="capturePhoto('video-absensi', 'photo-preview-absensi', 'absensi-photo-data')" class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-sm font-bold">Ambil Foto</button>
+                                <button id="btn-open-cam" onclick="startCamera('video-absensi', 'cam-placeholder-absensi')" class="flex-1 bg-gray-800 text-white py-3 rounded-xl text-sm font-bold active:scale-95 transition-all">Buka Kamera</button>
+                                <button id="btn-capture" onclick="capturePhoto('video-absensi', 'photo-preview-absensi', 'absensi-photo-data')" class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-sm font-bold active:scale-95 transition-all">Ambil Foto</button>
                             </div>
                             <input type="hidden" id="absensi-photo-data">
                         </div>
-                        <button onclick="submitAbsensi()" class="w-full mt-6 bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-200">Simpan & Reset</button>
+                        
+                        <button id="btn-submit-absensi" onclick="submitAbsensi()" class="w-full mt-6 bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-200 active:scale-[0.98] transition-all disabled:bg-gray-300 disabled:shadow-none">Simpan & Reset</button>
                     </div>
                 </section>
 
-                <!-- Placeholder untuk Tab Lain agar tidak error saat dipanggil switchTab -->
-                <section id="tab-konseling" class="tab-content p-10 text-center text-gray-400">Silakan pilih menu di samping.</section>
-                <section id="tab-pengawasan" class="tab-content p-10 text-center text-gray-400">Silakan pilih menu di samping.</section>
-                <section id="tab-daur" class="tab-content p-10 text-center text-gray-400">Silakan pilih menu di samping.</section>
-                <section id="tab-terlambat" class="tab-content p-10 text-center text-gray-400">Silakan pilih menu di samping.</section>
-                <section id="tab-pelanggaran" class="tab-content p-10 text-center text-gray-400">Silakan pilih menu di samping.</section>
+                <section id="tab-konseling" class="tab-content p-10 text-center text-gray-400">Fitur Konseling segera hadir.</section>
+                <section id="tab-pengawasan" class="tab-content p-10 text-center text-gray-400">Fitur Pengawasan segera hadir.</section>
+                <section id="tab-daur" class="tab-content p-10 text-center text-gray-400">Fitur Laporan Daur segera hadir.</section>
+                <section id="tab-terlambat" class="tab-content p-10 text-center text-gray-400">Fitur Terlambat segera hadir.</section>
+                <section id="tab-pelanggaran" class="tab-content p-10 text-center text-gray-400 text-red-300">Fitur Pelanggaran segera hadir.</section>
             </div>
         </main>
     </div>
@@ -133,7 +133,6 @@
     <div id="notification-container" class="fixed bottom-6 right-6 z-[110] space-y-3 pointer-events-none"></div>
 
     <script>
-        // --- KONFIGURASI ---
         const API_URL = "https://script.google.com/macros/s/AKfycbzfuc0dZFhefaM07RVvyPF8yCZpu6piVvznld9urTNUgixqRzGjGuuwXe7OEY2bSRnr5g/exec"; 
         const CLIENT_ID = "142276774829-q7b6vicbq1hm1ltng7itehietn03l119.apps.googleusercontent.com";
 
@@ -161,12 +160,8 @@
             showGlobalStatus(true);
             
             try {
-                // Gunakan mode: 'cors' secara eksplisit
-                const res = await fetch(`${API_URL}?action=get_profile&email=${payload.email}`, {
-                    method: 'GET'
-                });
-
-                if (!res.ok) throw new Error('Network error');
+                const res = await fetch(`${API_URL}?action=get_profile&email=${payload.email}`);
+                if (!res.ok) throw new Error('Koneksi Gagal');
                 const profile = await res.json();
                 
                 if (profile && profile.status !== "error") {
@@ -174,13 +169,12 @@
                     document.getElementById('auth-overlay').classList.add('hidden');
                     document.getElementById('main-app').classList.remove('blur-sm', 'pointer-events-none');
                     setupUserUI();
-                    loadInitialData(); // Panggil pengisian dropdown setelah login
+                    loadInitialData();
                 } else {
-                    alert("Akses Ditolak: Profil tidak ditemukan.");
+                    alert("Akses Ditolak: Profil tidak terdaftar.");
                 }
             } catch (e) {
-                console.error("Login Error:", e);
-                alert("Gagal Login. Pastikan Script dideploy as 'Anyone'.");
+                alert("Gagal Login. Pastikan Script dideploy 'Anyone'.");
             } finally {
                 showGlobalStatus(false);
             }
@@ -194,35 +188,114 @@
 
         async function loadInitialData() {
             showGlobalStatus(true);
-            console.log("Memulai penarikan data dropdown...");
             try {
                 const res = await fetch(`${API_URL}?action=get_initial_data`);
-                if (!res.ok) throw new Error('Gagal fetch dropdown');
-                
                 dbDropdown = await res.json();
-                console.log("Data Dropdown Diterima:", dbDropdown);
-                
                 populateDropdowns();
-                showNotify('success', 'Data dropdown berhasil dimuat');
             } catch (e) {
-                console.error("Dropdown Error:", e);
-                showNotify('error', 'Gagal memuat dropdown. Cek koneksi.');
+                showNotify('error', 'Gagal memuat data dropdown.');
             } finally {
                 showGlobalStatus(false);
             }
         }
 
         function populateDropdowns() {
-            const dropdowns = {
-                'absensi-ket': dbDropdown.keterangan || []
-            };
+            const el = document.getElementById('absensi-ket');
+            if (el && dbDropdown.keterangan) {
+                el.innerHTML = '<option value="">-- Pilih Keterangan --</option>';
+                dbDropdown.keterangan.forEach(val => el.add(new Option(val, val)));
+            }
+        }
 
-            for (const [id, data] of Object.entries(dropdowns)) {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.innerHTML = '<option value="">-- Pilih Keterangan --</option>';
-                    data.forEach(val => el.add(new Option(val, val)));
+        // FUNGSI SUBMIT DATA
+        async function submitAbsensi() {
+            const ket = document.getElementById('absensi-ket').value;
+            const photoData = document.getElementById('absensi-photo-data').value;
+            const btn = document.getElementById('btn-submit-absensi');
+
+            if (!ket) return showNotify('error', 'Pilih keterangan kehadiran!');
+            if (!photoData) return showNotify('error', 'Ambil foto terlebih dahulu!');
+
+            btn.disabled = true;
+            btn.innerText = "Mengirim...";
+            showGlobalStatus(true);
+
+            try {
+                // Mengirim data menggunakan POST ke Apps Script
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'submit_absensi',
+                        email: currentUser.email,
+                        nama: currentUser.nama,
+                        syuqoh: currentUser.syuqoh,
+                        keterangan: ket,
+                        foto: photoData // Base64 foto
+                    })
+                });
+
+                const result = await res.json();
+                
+                if (result.status === 'success') {
+                    showNotify('success', 'Data absensi berhasil disimpan');
+                    resetAbsensiForm();
+                } else {
+                    throw new Error(result.message || 'Gagal menyimpan');
                 }
+            } catch (e) {
+                console.error(e);
+                showNotify('error', 'Gagal simpan: ' + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Simpan & Reset";
+                showGlobalStatus(false);
+            }
+        }
+
+        function resetAbsensiForm() {
+            document.getElementById('absensi-ket').value = "";
+            document.getElementById('absensi-photo-data').value = "";
+            document.getElementById('photo-preview-absensi').classList.add('hidden');
+            document.getElementById('photo-preview-absensi').src = "";
+            document.getElementById('cam-placeholder-absensi').classList.remove('hidden');
+            document.getElementById('video-absensi').classList.add('hidden');
+            
+            // Matikan kamera jika masih nyala
+            const video = document.getElementById('video-absensi');
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(t => t.stop());
+                video.srcObject = null;
+            }
+        }
+
+        function startCamera(vId, pId) {
+            const video = document.getElementById(vId);
+            document.getElementById(pId).classList.add('hidden');
+            video.classList.remove('hidden');
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(s => { video.srcObject = s; video.play(); })
+                .catch(e => showNotify('error', "Kamera error: " + e));
+        }
+
+        function capturePhoto(vId, prId, dId) {
+            const video = document.getElementById(vId);
+            if (!video.srcObject) return showNotify('error', 'Buka kamera dulu!');
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth; 
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            const data = canvas.toDataURL('image/jpeg', 0.6);
+            document.getElementById(dId).value = data;
+            
+            const preview = document.getElementById(prId);
+            preview.src = data; 
+            preview.classList.remove('hidden');
+            video.classList.add('hidden');
+            
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(t => t.stop());
             }
         }
 
@@ -235,38 +308,15 @@
             document.getElementById('header-title').innerText = tabId.toUpperCase();
         }
 
-        // Kamera & Helper
-        function startCamera(vId, pId) {
-            const video = document.getElementById(vId);
-            document.getElementById(pId).classList.add('hidden');
-            video.classList.remove('hidden');
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-                .then(s => { video.srcObject = s; video.play(); })
-                .catch(e => alert("Kamera error: " + e));
-        }
-
-        function capturePhoto(vId, prId, dId) {
-            const video = document.getElementById(vId);
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            const data = canvas.toDataURL('image/jpeg', 0.6);
-            document.getElementById(dId).value = data;
-            const preview = document.getElementById(prId);
-            preview.src = data; preview.classList.remove('hidden');
-            video.classList.add('hidden');
-            if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
-        }
-
         function showGlobalStatus(show) { document.getElementById('global-status').classList.toggle('hidden', !show); }
         
         function showNotify(type, msg) {
             const container = document.getElementById('notification-container');
             const el = document.createElement('div');
-            el.className = `p-4 rounded-xl shadow-lg text-white font-bold text-xs ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`;
+            el.className = `p-4 rounded-xl shadow-xl text-white font-bold text-sm transform transition-all animate-bounce ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`;
             el.innerText = msg;
             container.appendChild(el);
-            setTimeout(() => el.remove(), 3000);
+            setTimeout(() => el.remove(), 4000);
         }
     </script>
 </body>
