@@ -385,14 +385,12 @@
         // 1. ABSENSI
         async function submitAbsensi() {
             const ket = val('abs-ket');
-            const foto = getImgSrc('img-function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('-translate-x-full');
-        }abs');
+            const foto = getImgSrc('img-abs');
             if(!ket || !foto) return showToast('error', 'Isi keterangan & foto');
 
             setLoading(true);
             const loc = await getLoc();
-
+            
             postData('save_absensi', {
                 email: state.user.email,
                 nama: state.user.nama,
@@ -404,7 +402,7 @@
                 resetCam('img-abs', 'vid-abs', 'cam-placeholder-abs');
             });
         }
-
+        
         // 2. KONSELING
         function initKonseling() {
             const kamars = [...new Set(state.santriCache.map(s => s.kamar))].sort();
