@@ -274,6 +274,12 @@
         window.onload = () => {
             initAuth();
             lucide.createIcons();
+            if (!isLoggedIn()) {
+                document.getElementById('auth-overlay').classList.remove('hidden');
+            } else {
+                document.getElementById('auth-overlay').classList.add('hidden');
+            }
+
 
             // Cek Session Lokal
             const savedUser = localStorage.getItem('pondok_user_session');
