@@ -10,20 +10,37 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .sidebar {transition: transform 0.3s ease-in-out;}
-        .tab-content {display: none; }/* Default semua sembunyi */
-        .tab-content.active {display: block !important;} /* Muncul jika ada class active */
-        .nav-item.active { background-color: #eff6ff;color: #2563eb;}
+        
+        /* Sidebar Transition */
+        #sidebar { transition: transform 0.3s ease-in-out; }
+        
+        /* Tab Content Logic */
+        .tab-content { display: none; } 
+        .tab-content.active { 
+            display: block !important; 
+            animation: fadeIn 0.3s ease-out;
+        } 
+        
+        .nav-item.active { background-color: #eff6ff; color: #2563eb; }
+        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        /* Hide scrollbar for clean UI */
+        
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Form Styles */
+        .input-field { width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; font-size: 0.875rem; background-color: #fff; outline: none; transition: all 0.2s; }
+        .input-field:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+        .label-text { display: block; font-size: 0.75rem; font-weight: 600; color: #4b5563; margin-bottom: 0.25rem; }
+        .btn-primary { background-color: #2563eb; color: white; font-weight: 600; padding: 0.75rem; border-radius: 0.5rem; transition: background 0.2s; font-size: 0.875rem; }
+        .btn-primary:hover { background-color: #1d4ed8; }
+        .btn-secondary { background-color: #f3f4f6; color: #374151; font-weight: 600; padding: 0.75rem; border-radius: 0.5rem; width: 100%; border: 1px solid #e5e7eb; font-size: 0.875rem; }
+        .cam-container { position: relative; background-color: #f9fafb; border: 2px dashed #d1d5db; border-radius: 0.75rem; overflow: hidden; aspect-ratio: 16/9; margin-bottom: 0.5rem; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 h-screen overflow-hidden flex flex-col md:flex-row">
 
-    <!-- LOGIN OVERLAY -->
-    <div id="auth-overlay" class="fixed inset-0 z-50 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 transition-all duration-300">
+    <div id="auth-overlay" class="fixed inset-0 z-[60] bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 transition-all duration-300">
         <div class="bg-white p-8 rounded-2xl shadow-2xl border border-gray-100 max-w-sm w-full text-center">
             <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i data-lucide="shield-check" class="w-8 h-8"></i>
@@ -34,19 +51,22 @@
         </div>
     </div>
 
-    <!-- SIDEBAR -->
-    <button onclick="toggleSidebar()" class="md:hidden p-3 text-gray-600">
-    <i data-lucide="menu" class="w-6 h-6"></i>
-    </button>
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col transition-transform transform -translate-x-full md:translate-x-0 md:static md:block hidden">
-        <div class="p-5 border-b border-gray-100 flex items-center gap-3">
-            <div class="bg-blue-600 text-white p-1.5 rounded-lg">
-                <i data-lucide="layout-grid" class="w-5 h-5"></i>
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/40 z-40 hidden md:hidden transition-opacity"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out">
+        <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-1.5 rounded-lg">
+                    <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-gray-900 text-sm">Dashboard</h2>
+                    <p class="text-[10px] text-gray-500">Sistem Monitoring</p>
+                </div>
             </div>
-            <div>
-                <h2 class="font-bold text-gray-900 text-sm">Dashboard</h2>
-                <p class="text-[10px] text-gray-500">Sistem Monitoring</p>
-            </div>
+            <button onclick="toggleSidebar()" class="md:hidden text-gray-400">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
         </div>
         
         <div class="p-4 bg-gray-50 border-b border-gray-100">
@@ -59,7 +79,7 @@
             </div>
         </div>
 
-        <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+        <nav class="flex-1 overflow-y-auto p-3 space-y-1 no-scrollbar">
             <button onclick="nav('absensi')" id="nav-absensi" class="nav-item active w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                 <i data-lucide="user-check" class="w-4 h-4"></i> Absensi
             </button>
@@ -86,186 +106,65 @@
             </button>
         </div>
     </aside>
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/20 z-40 hidden md:hidden"></div>
 
-    <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto bg-gray-50 relative">
-        <!-- Header Mobile -->
-        <header class="bg-white h-14 border-b border-gray-200 flex items-center px-4 justify-between sticky top-0 z-10 md:hidden">
-            <span class="font-bold text-gray-900" id="mobile-title">Absensi</span>
+        <header class="bg-white h-14 border-b border-gray-200 flex items-center px-4 justify-between sticky top-0 z-30 md:hidden">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <span class="font-bold text-gray-900" id="mobile-title">Absensi</span>
+            </div>
             <div id="status-badge" class="hidden text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Proses...</div>
         </header>
 
         <div class="max-w-3xl mx-auto p-4 md:p-8 pb-24">
-            
-            <!-- 1. ABSENSI -->
-            <section id="tab-absensi" class="tab-content active space-y-4">
-                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i> Absensi Kehadiran</h3>
-                    
-                    <label class="label-text">Keterangan</label>
-                    <select id="abs-ket" class="input-field mb-4"><option value="">Loading...</option></select>
-
-                    <div class="cam-container">
-                        <video id="vid-abs" class="w-full h-full object-cover hidden"></video>
-                        <img id="img-abs" class="w-full h-full object-cover hidden rounded-lg">
-                        <div id="cam-placeholder-abs" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
-                            <i data-lucide="camera" class="w-8 h-8 mb-2"></i>
-                            <span class="text-xs">Preview Kamera</span>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <button onclick="startCam('vid-abs', 'cam-placeholder-abs')" class="btn-secondary">Buka Kamera</button>
-                        <button onclick="takeSnap('vid-abs', 'img-abs')" class="btn-primary bg-gray-800 hover:bg-gray-900">Ambil Foto</button>
-                    </div>
-
-                    <button onclick="submitAbsensi()" class="btn-primary w-full">Simpan Absensi</button>
-                </div>
-            </section>
-
-            <!-- 2. KONSELING -->
-            <section id="tab-konseling" class="tab-content hidden space-y-4">
-                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2"><i data-lucide="heart-handshake" class="w-4 h-4"></i> Form Konseling</h3>
-                    <p class="text-xs text-gray-400 mb-4">Filter otomatis berdasarkan Syuqoh Anda</p>
-
-                    <label class="label-text">Pilih Kamar</label>
-                    <select id="kon-kamar" onchange="filterKonSantri()" class="input-field mb-3"></select>
-
-                    <label class="label-text">Pilih Santri</label>
-                    <select id="kon-santri" class="input-field mb-3 disabled:bg-gray-100" disabled>
-                        <option value="">Pilih Kamar dulu</option>
-                    </select>
-
-                    <label class="label-text">Laporan Konseling</label>
-                    <textarea id="kon-laporan" rows="4" class="input-field mb-4" placeholder="Tulis detail konseling..."></textarea>
-
-                    <button onclick="submitKonseling()" class="btn-primary w-full">Simpan Laporan</button>
-                </div>
-            </section>
-
-            <!-- 3. PENGAWASAN -->
-            <section id="tab-pengawasan" class="tab-content hidden space-y-4">
-                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2"><i data-lucide="eye" class="w-4 h-4"></i> Pengawasan Daur</h3>
-                    <p class="text-xs text-gray-400 mb-4">List Musyrif di Gedung Anda</p>
-
-                    <label class="label-text">Pilih Daur</label>
-                    <select id="peng-daur" class="input-field mb-4"></select>
-
-                    <div id="list-musyrif" class="space-y-3 mb-4 max-h-96 overflow-y-auto no-scrollbar">
-                        <div class="text-center text-xs text-gray-400 py-4">Memuat data musyrif...</div>
-                    </div>
-
-                    <button onclick="submitPengawasan()" class="btn-primary w-full">Simpan Pengawasan</button>
-                </div>
-            </section>
-
-            <!-- 4. LAPORAN DAUR -->
-            <section id="tab-daur" class="tab-content hidden space-y-4">
-                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2"><i data-lucide="check-square" class="w-4 h-4"></i> Checklist Daur Santri</h3>
-                    <p class="text-xs text-gray-400 mb-4">Santri di Syuqoh Anda (Urut Kamar)</p>
-                    
-                    <!-- Area Checklist -->
-                    <div id="list-daur-santri" class="space-y-2 mb-4 max-h-80 overflow-y-auto border rounded-lg p-2 bg-gray-50"></div>
-                    
-                    <!-- Area Input Bulk -->
-                    <div id="daur-bulk-area" class="hidden border-t pt-4">
-                        <p class="text-xs font-bold mb-2 text-blue-600">Santri Terpilih (<span id="daur-count">0</span>):</p>
-                        <div id="daur-selected-list" class="flex flex-wrap gap-1 mb-3"></div>
-                        
-                        <label class="label-text">Keterangan (untuk semua terpilih)</label>
-                        <select id="daur-ket-bulk" class="input-field mb-4">
-                            <!-- Diisi JS -->
-                        </select>
-                        <button onclick="submitDaur()" class="btn-primary w-full">Simpan Laporan Daur</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 5. KETERLAMBATAN -->
-            <section id="tab-terlambat" class="tab-content hidden space-y-4">
-                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-                    <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4"></i> Input Keterlambatan</h3>
-                    
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div>
-                            <label class="label-text">Jenis</label>
-                            <select id="telat-jenis" class="input-field"></select>
-                        </div>
-                        <div>
-                            <label class="label-text">Jenis</label>
-                            <select id="telat-gedung" class="input-field" onchange="clearSearch()"></select>
-                        </div>
-                    </div>
-
-                    <div class="relative mb-4">
-                        <input type="text" id="telat-search" onkeyup="searchSantri('telat')" placeholder="Cari Nama Santri..." class="input-field pl-9">
-                        <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3.5"></i>
-                        <div id="telat-results" class="absolute z-10 w-full bg-white shadow-xl rounded-lg mt-1 max-h-48 overflow-y-auto hidden border"></div>
-                    </div>
-
-                    <!-- List Keranjang -->
-                    <div id="telat-cart" class="space-y-2 mb-4"></div>
-
-                    <button onclick="submitTerlambat()" class="btn-primary w-full bg-orange-600 hover:bg-orange-700">Simpan Data</button>
-                </div>
-            </section>
-
-            <!-- 6. PELANGGARAN -->
-            <section id="tab-pelanggaran" class="tab-content hidden space-y-4">
-                <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm border-l-4 border-l-red-500">
-                    <h3 class="font-bold text-red-700 mb-4 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Catat Pelanggaran</h3>
-                    
-                    <label class="label-text">Jenis Pelanggaran</label>
-                    <select id="pel-ket" class="input-field mb-4"></select>
-
-                    <div class="relative mb-4">
-                        <input type="text" id="pel-search" onkeyup="searchSantri('pel')" placeholder="Cari Nama Santri (Semua Gedung)..." class="input-field pl-9">
-                        <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3.5"></i>
-                        <div id="pel-results" class="absolute z-10 w-full bg-white shadow-xl rounded-lg mt-1 max-h-48 overflow-y-auto hidden border"></div>
-                    </div>
-
-                    <div id="pel-cart" class="space-y-2 mb-4"></div>
-
-                    <!-- Kamera Pelanggaran -->
-                    <div class="cam-container h-48 mb-2">
-                        <video id="vid-pel" class="w-full h-full object-cover hidden"></video>
-                        <img id="img-pel" class="w-full h-full object-cover hidden rounded-lg">
-                        <div id="cam-placeholder-pel" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
-                            <i data-lucide="camera" class="w-8 h-8 mb-2"></i>
-                            <span class="text-xs">Foto Bukti (Wajib)</span>
-                        </div>
-                    </div>
-                    <div class="flex gap-2 mb-4">
-                        <button onclick="startCam('vid-pel', 'cam-placeholder-pel')" class="btn-secondary py-1 text-xs">Buka Kamera</button>
-                        <button onclick="takeSnap('vid-pel', 'img-pel')" class="btn-secondary py-1 text-xs bg-red-100 text-red-700 border-red-200">Ambil Foto</button>
-                    </div>
-
-                    <button onclick="submitPelanggaran()" class="btn-primary w-full bg-red-600 hover:bg-red-700">Simpan Pelanggaran</button>
-                </div>
-            </section>
-
-        </div>
+            </div>
     </main>
 
-    <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg text-sm transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 z-50">
-        <i id="toast-icon" data-lucide="check-circle" class="w-4 h-4 text-green-400"></i>
-        <span id="toast-msg">Notifikasi</span>
-    </div>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const isClosed = sidebar.classList.contains('-translate-x-full');
 
-    <style>
-        .input-field { width: 100%; padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; font-size: 0.875rem; background-color: #fff; outline: none; transition: all 0.2s; }
-        .input-field:focus { border-color: #3b82f6; ring: 2px solid #3b82f6; }
-        .label-text { display: block; font-size: 0.75rem; font-weight: 600; color: #4b5563; margin-bottom: 0.25rem; }
-        .btn-primary { background-color: #2563eb; color: white; font-weight: 600; padding: 0.75rem; border-radius: 0.5rem; transition: background 0.2s; font-size: 0.875rem; }
-        .btn-primary:hover { background-color: #1d4ed8; }
-        .btn-secondary { background-color: #f3f4f6; color: #374151; font-weight: 600; padding: 0.75rem; border-radius: 0.5rem; width: 100%; border: 1px solid #e5e7eb; font-size: 0.875rem; }
-        .cam-container { position: relative; background-color: #f9fafb; border: 2px dashed #d1d5db; border-radius: 0.75rem; overflow: hidden; aspect-ratio: 16/9; margin-bottom: 0.5rem; }
-    </style>
+            if (isClosed) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Update fungsi nav Anda agar menutup sidebar di mobile
+        function nav(tab) {
+            // 1. Logika Tab (Sembunyikan semua, munculkan satu)
+            document.querySelectorAll('.tab-content').forEach(t => {
+                t.classList.remove('active');
+                t.classList.add('hidden');
+            });
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            const targetTab = document.getElementById(`tab-${tab}`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+                targetTab.classList.remove('hidden');
+            }
+            
+            const targetNav = document.getElementById(`nav-${tab}`);
+            if (targetNav) targetNav.classList.add('active');
+
+            // 2. Update Title
+            document.getElementById('mobile-title').innerText = tab.charAt(0).toUpperCase() + tab.slice(1);
+
+            // 3. Tutup Sidebar di Mobile
+            if (window.innerWidth < 768) {
+                toggleSidebar();
+            }
+        }
+    </script>
+</body>
 
     <script>
         // --- KONFIGURASI (GANTI URL WEB APP ANDA DI SINI) ---
