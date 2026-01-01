@@ -13,7 +13,7 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .nav-btn.active { background-color: #2563eb; color: white; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -33,7 +33,7 @@
 
     <!-- Main App Container -->
     <div id="main-app" class="flex flex-col md:flex-row h-screen overflow-hidden blur-sm pointer-events-none transition-all duration-500">
-
+        
         <!-- Sidebar -->
         <aside class="w-full md:w-72 bg-white border-r border-gray-200 flex flex-col">
             <div class="p-6 border-b border-gray-100 flex items-center gap-3">
@@ -91,13 +91,15 @@
             </header>
 
             <div class="p-4 md:p-8 max-w-4xl mx-auto">
-                <!-- Sesuai dengan isi tab sebelumnya -->
+                
+                <!-- Tab Absensi -->
                 <section id="tab-absensi" class="tab-content active space-y-6">
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
                         <label class="block text-sm font-bold text-gray-700 mb-2">Keterangan Kehadiran</label>
-                        <select id="absensi-ket" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl mb-4 focus:ring-2 focus:ring-blue-500 outline-none">
-                            <option value="">-- Pilih Keterangan --</option>
+                        <select id="absensi-ket" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl mb-4 outline-none">
+                            <option value="">-- Menunggu Data --</option>
                         </select>
+                        <!-- Kamera logic sama seperti sebelumnya -->
                         <div class="space-y-4">
                             <div class="aspect-video bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center border-2 border-dashed border-gray-300 relative">
                                 <video id="video-absensi" class="hidden w-full h-full object-cover"></video>
@@ -113,11 +115,16 @@
                             </div>
                             <input type="hidden" id="absensi-photo-data">
                         </div>
-                        <button onclick="submitAbsensi()" class="w-full mt-6 bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-200 active:scale-[0.98] transition-all">Simpan & Reset</button>
+                        <button onclick="submitAbsensi()" class="w-full mt-6 bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-200">Simpan & Reset</button>
                     </div>
                 </section>
 
-                <!-- Tab lainnya tetap sama strukturnya seperti versi sebelumnya... -->
+                <!-- Placeholder untuk Tab Lain agar tidak error saat dipanggil switchTab -->
+                <section id="tab-konseling" class="tab-content p-10 text-center text-gray-400">Silakan pilih menu di samping.</section>
+                <section id="tab-pengawasan" class="tab-content p-10 text-center text-gray-400">Silakan pilih menu di samping.</section>
+                <section id="tab-daur" class="tab-content p-10 text-center text-gray-400">Silakan pilih menu di samping.</section>
+                <section id="tab-terlambat" class="tab-content p-10 text-center text-gray-400">Silakan pilih menu di samping.</section>
+                <section id="tab-pelanggaran" class="tab-content p-10 text-center text-gray-400">Silakan pilih menu di samping.</section>
             </div>
         </main>
     </div>
@@ -126,26 +133,18 @@
     <div id="notification-container" class="fixed bottom-6 right-6 z-[110] space-y-3 pointer-events-none"></div>
 
     <script>
-        // --- KONFIGURASI (WAJIB GANTI URL INI) ---
-        const API_URL = "https://script.google.com/macros/s/AKfycbzfuc0dZFhefaM07RVvyPF8yCZpu6piVvznld9urTNUgixqRzGjGuuwXe7OEY2bSRnr5g/exec";
+        // --- KONFIGURASI ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbzfuc0dZFhefaM07RVvyPF8yCZpu6piVvznld9urTNUgixqRzGjGuuwXe7OEY2bSRnr5g/exec"; 
         const CLIENT_ID = "142276774829-q7b6vicbq1hm1ltng7itehietn03l119.apps.googleusercontent.com";
 
         let currentUser = null;
         let dbDropdown = {};
-        let allSantriCache = [];
-        let selectedItems = { terlambat: [], pelanggaran: [], daur: [] };
 
         window.onload = () => {
             initGoogleAuth();
             lucide.createIcons();
-            // Cek apakah URL sudah diganti
-            if (API_URL === "GANTI_DENGAN_URL_WEB_APP_ANDA") {
-                console.error("Kesalahan: API_URL belum dikonfigurasi!");
-                alert("Sistem belum siap: API_URL belum diatur di dalam kode.");
-            }
         };
 
-        // --- AUTH LOGIC ---
         function initGoogleAuth() {
             google.accounts.id.initialize({
                 client_id: CLIENT_ID,
@@ -160,33 +159,28 @@
         async function handleCredentialResponse(response) {
             const payload = JSON.parse(atob(response.credential.split('.')[1]));
             showGlobalStatus(true);
-
+            
             try {
-                console.log("Mencoba menghubungi server untuk email:", payload.email);
+                // Gunakan mode: 'cors' secara eksplisit
+                const res = await fetch(`${API_URL}?action=get_profile&email=${payload.email}`, {
+                    method: 'GET'
+                });
 
-                // Menambahkan timeout agar tidak menunggu selamanya
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 detik timeout
-
-                const res = await fetch(`${API_URL}?action=get_profile&email=${payload.email}`, { signal: controller.signal });
-                clearTimeout(timeoutId);
-
+                if (!res.ok) throw new Error('Network error');
                 const profile = await res.json();
-                console.log("Response Profile:", profile);
-
+                
                 if (profile && profile.status !== "error") {
                     currentUser = { ...payload, ...profile };
                     document.getElementById('auth-overlay').classList.add('hidden');
                     document.getElementById('main-app').classList.remove('blur-sm', 'pointer-events-none');
                     setupUserUI();
-                    loadInitialData();
+                    loadInitialData(); // Panggil pengisian dropdown setelah login
                 } else {
-                    alert("Akses Ditolak: Email Anda tidak ditemukan di DB USTADZ atau script mengembalikan error.");
-                    console.warn("Profil tidak ditemukan atau status error", profile);
+                    alert("Akses Ditolak: Profil tidak ditemukan.");
                 }
             } catch (e) {
-                console.error("Detail Error Koneksi:", e);
-                alert("Gagal terhubung ke Server.\n\nPastikan:\n1. URL Web App sudah benar.\n2. Script sudah di-Deploy sebagai 'Anyone'.\n3. Cek Console (F12) untuk detail teknis.");
+                console.error("Login Error:", e);
+                alert("Gagal Login. Pastikan Script dideploy as 'Anyone'.");
             } finally {
                 showGlobalStatus(false);
             }
@@ -196,50 +190,84 @@
             document.getElementById('user-name').innerText = currentUser.nama;
             document.getElementById('user-photo').src = currentUser.picture;
             document.getElementById('user-photo').classList.remove('hidden');
-            const badge = document.getElementById('syuqoh-badge');
-            if (badge) badge.innerText = `Syuqoh: ${currentUser.syuqoh}`;
         }
 
         async function loadInitialData() {
             showGlobalStatus(true);
+            console.log("Memulai penarikan data dropdown...");
             try {
-                const resD = await fetch(`${API_URL}?action=get_initial_data`);
-                dbDropdown = await resD.json();
+                const res = await fetch(`${API_URL}?action=get_initial_data`);
+                if (!res.ok) throw new Error('Gagal fetch dropdown');
+                
+                dbDropdown = await res.json();
+                console.log("Data Dropdown Diterima:", dbDropdown);
+                
                 populateDropdowns();
-
-                const resS = await fetch(`${API_URL}?action=get_santri_by_room&syuqoh=${currentUser.syuqoh}`);
-                allSantriCache = await resS.json();
+                showNotify('success', 'Data dropdown berhasil dimuat');
             } catch (e) {
-                console.error("Gagal memuat data awal:", e);
+                console.error("Dropdown Error:", e);
+                showNotify('error', 'Gagal memuat dropdown. Cek koneksi.');
             } finally {
                 showGlobalStatus(false);
             }
         }
 
-        // --- Fungsi pembantu lainnya tetap sama ---
         function populateDropdowns() {
-            const populate = (id, arr) => {
-                const el = document.getElementById(id);
-                if (el && arr) {
-                    el.innerHTML = '<option value="">-- Pilih --</option>';
-                    arr.forEach(val => el.add(new Option(val, val)));
-                }
+            const dropdowns = {
+                'absensi-ket': dbDropdown.keterangan || []
             };
-            populate('absensi-ket', dbDropdown.keterangan || []);
-            populate('pengawasan-daur', dbDropdown.daur || []);
-            populate('terlambat-jenis', dbDropdown.jenisKeterlambatan || []);
-            populate('pelanggaran-ket', dbDropdown.pelanggaran || []);
+
+            for (const [id, data] of Object.entries(dropdowns)) {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.innerHTML = '<option value="">-- Pilih Keterangan --</option>';
+                    data.forEach(val => el.add(new Option(val, val)));
+                }
+            }
         }
 
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const target = document.getElementById(`tab-${tabId}`);
+            if (target) target.classList.add('active');
             btn.classList.add('active');
             document.getElementById('header-title').innerText = tabId.toUpperCase();
         }
 
+        // Kamera & Helper
+        function startCamera(vId, pId) {
+            const video = document.getElementById(vId);
+            document.getElementById(pId).classList.add('hidden');
+            video.classList.remove('hidden');
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(s => { video.srcObject = s; video.play(); })
+                .catch(e => alert("Kamera error: " + e));
+        }
+
+        function capturePhoto(vId, prId, dId) {
+            const video = document.getElementById(vId);
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const data = canvas.toDataURL('image/jpeg', 0.6);
+            document.getElementById(dId).value = data;
+            const preview = document.getElementById(prId);
+            preview.src = data; preview.classList.remove('hidden');
+            video.classList.add('hidden');
+            if (video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+        }
+
         function showGlobalStatus(show) { document.getElementById('global-status').classList.toggle('hidden', !show); }
+        
+        function showNotify(type, msg) {
+            const container = document.getElementById('notification-container');
+            const el = document.createElement('div');
+            el.className = `p-4 rounded-xl shadow-lg text-white font-bold text-xs ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`;
+            el.innerText = msg;
+            container.appendChild(el);
+            setTimeout(() => el.remove(), 3000);
+        }
     </script>
 </body>
 </html>
