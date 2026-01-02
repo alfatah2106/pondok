@@ -17,7 +17,6 @@
         /* Hide scrollbar for clean UI */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
         /* Mobile Sidebar Transition */
         .sidebar-transition { transition: transform 0.3s ease-in-out; }
     </style>
@@ -51,7 +50,6 @@
                     <p class="text-[10px] text-gray-500">Sistem Monitoring</p>
                 </div>
             </div>
-            <!-- Close button for mobile -->
             <button onclick="toggleSidebar()" class="md:hidden text-gray-500 hover:text-red-500">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
@@ -62,7 +60,7 @@
                 <img id="user-photo" src="" class="w-9 h-9 rounded-full border border-white shadow-sm bg-gray-200 object-cover">
                 <div class="overflow-hidden">
                     <p id="user-name" class="font-semibold text-xs text-gray-900 truncate">Memuat...</p>
-                    <p id="user-syuqoh" class="text-[10px] text-blue-600 font-medium uppercase tracking-wider">...</p>
+                    <p id="user-jabatan" class="text-[10px] text-blue-600 font-medium uppercase tracking-wider">...</p>
                 </div>
             </div>
         </div>
@@ -77,9 +75,12 @@
             <button onclick="nav('konseling')" id="nav-konseling" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                 <i data-lucide="heart-handshake" class="w-4 h-4"></i> Konseling
             </button>
-            <button onclick="nav('pengawasan')" id="nav-pengawasan" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+            
+            <!-- ACCESS RESTRICTED: PENGAWAS ONLY -->
+            <button onclick="nav('pengawasan')" id="nav-pengawasan" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors hidden">
                 <i data-lucide="eye" class="w-4 h-4"></i> Pengawasan
             </button>
+
             <button onclick="nav('daur')" id="nav-daur" class="nav-item w-full flex items-center gap-3 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                 <i data-lucide="clipboard-list" class="w-4 h-4"></i> Laporan Daur
             </button>
@@ -118,7 +119,10 @@
                 <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-6 rounded-2xl shadow-lg text-white mb-6">
                     <h2 class="text-2xl font-bold mb-2">Ahlan wa Sahlan,</h2>
                     <h3 class="text-xl font-medium opacity-90" id="home-user-name">Ustadz</h3>
-                    <p class="text-sm mt-4 opacity-75 bg-white/20 inline-block px-3 py-1 rounded-full" id="home-syuqoh">Loading Syuqoh...</p>
+                    <div class="flex gap-2 mt-4">
+                        <span class="text-xs bg-white/20 px-3 py-1 rounded-full" id="home-jabatan">...</span>
+                        <span class="text-xs bg-white/20 px-3 py-1 rounded-full" id="home-syuqoh">...</span>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -130,10 +134,13 @@
                         <div class="bg-pink-100 p-3 rounded-full text-pink-600 mb-3"><i data-lucide="heart-handshake" class="w-6 h-6"></i></div>
                         <span class="font-bold text-gray-700">Konseling</span>
                     </div>
-                    <div onclick="nav('pengawasan')" class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col items-center text-center">
+                    
+                    <!-- ACCESS RESTRICTED: PENGAWAS ONLY -->
+                    <div onclick="nav('pengawasan')" id="card-pengawasan" class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col items-center text-center hidden">
                         <div class="bg-purple-100 p-3 rounded-full text-purple-600 mb-3"><i data-lucide="eye" class="w-6 h-6"></i></div>
                         <span class="font-bold text-gray-700">Pengawasan</span>
                     </div>
+
                     <div onclick="nav('daur')" class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col items-center text-center">
                         <div class="bg-emerald-100 p-3 rounded-full text-emerald-600 mb-3"><i data-lucide="clipboard-list" class="w-6 h-6"></i></div>
                         <span class="font-bold text-gray-700">Laporan Daur</span>
@@ -157,17 +164,21 @@
                     <label class="label-text">Keterangan</label>
                     <select id="abs-ket" class="input-field mb-4"><option value="">Loading...</option></select>
 
-                    <div class="cam-container">
-                        <video id="vid-abs" class="w-full h-full object-cover hidden"></video>
-                        <img id="img-abs" class="w-full h-full object-cover hidden rounded-lg">
+                    <div class="cam-container relative">
+                        <video id="vid-abs" class="w-full h-full object-cover hidden scale-x-[-1]"></video>
+                        <img id="img-abs" class="w-full h-full object-cover hidden rounded-lg scale-x-[-1]">
                         <div id="cam-placeholder-abs" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
                             <i data-lucide="camera" class="w-8 h-8 mb-2"></i>
                             <span class="text-xs">Preview Kamera</span>
                         </div>
+                        <!-- CAM SWITCH BTN -->
+                        <button onclick="toggleCam('vid-abs')" id="btn-switch-abs" class="absolute top-2 right-2 bg-white/80 p-2 rounded-full shadow hidden z-10 text-gray-700">
+                            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                        </button>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-2 mb-4">
-                        <button onclick="startCam('vid-abs', 'cam-placeholder-abs')" class="btn-secondary">Buka Kamera</button>
+                        <button onclick="startCam('vid-abs', 'cam-placeholder-abs', 'btn-switch-abs')" class="btn-secondary">Buka Kamera</button>
                         <button onclick="takeSnap('vid-abs', 'img-abs')" class="btn-primary bg-gray-800 hover:bg-gray-900">Ambil Foto</button>
                     </div>
 
@@ -213,24 +224,19 @@
                 </div>
             </section>
 
-            <!-- 4. LAPORAN DAUR -->
+            <!-- 4. DAUR -->
             <section id="tab-daur" class="tab-content space-y-4">
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                     <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2"><i data-lucide="check-square" class="w-4 h-4"></i> Checklist Daur Santri</h3>
                     <p class="text-xs text-gray-400 mb-4">Santri di Syuqoh Anda (Urut Kamar)</p>
                     
-                    <!-- Area Checklist -->
                     <div id="list-daur-santri" class="space-y-2 mb-4 max-h-80 overflow-y-auto border rounded-lg p-2 bg-gray-50"></div>
                     
-                    <!-- Area Input Bulk -->
                     <div id="daur-bulk-area" class="hidden border-t pt-4">
                         <p class="text-xs font-bold mb-2 text-blue-600">Santri Terpilih (<span id="daur-count">0</span>):</p>
                         <div id="daur-selected-list" class="flex flex-wrap gap-1 mb-3"></div>
-                        
                         <label class="label-text">Keterangan (untuk semua terpilih)</label>
-                        <select id="daur-ket-bulk" class="input-field mb-4">
-                            <!-- Diisi JS -->
-                        </select>
+                        <select id="daur-ket-bulk" class="input-field mb-4"></select>
                         <button onclick="submitDaur()" class="btn-primary w-full">Simpan Laporan Daur</button>
                     </div>
                 </div>
@@ -240,32 +246,21 @@
             <section id="tab-terlambat" class="tab-content space-y-4">
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                     <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4"></i> Input Keterlambatan</h3>
-                    
                     <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div>
-                            <label class="label-text">Jenis</label>
-                            <select id="telat-jenis" class="input-field"></select>
-                        </div>
+                        <div><label class="label-text">Jenis</label><select id="telat-jenis" class="input-field"></select></div>
                         <div>
                             <label class="label-text">Gedung</label>
                             <select id="telat-gedung" class="input-field" onchange="clearSearch()">
-                                <option value="">--Pilih--</option>
-                                <option value="A">Gedung A</option>
-                                <option value="B">Gedung B</option>
-                                <option value="C">Gedung C</option>
+                                <option value="">--Pilih--</option><option value="A">Gedung A</option><option value="B">Gedung B</option><option value="C">Gedung C</option>
                             </select>
                         </div>
                     </div>
-
                     <div class="relative mb-4">
                         <input type="text" id="telat-search" onkeyup="searchSantri('telat')" placeholder="Cari Nama Santri..." class="input-field pl-9">
                         <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3.5"></i>
                         <div id="telat-results" class="absolute z-10 w-full bg-white shadow-xl rounded-lg mt-1 max-h-48 overflow-y-auto hidden border"></div>
                     </div>
-
-                    <!-- List Keranjang -->
                     <div id="telat-cart" class="space-y-2 mb-4"></div>
-
                     <button onclick="submitTerlambat()" class="btn-primary w-full bg-orange-600 hover:bg-orange-700">Simpan Data</button>
                 </div>
             </section>
@@ -274,29 +269,28 @@
             <section id="tab-pelanggaran" class="tab-content space-y-4">
                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm border-l-4 border-l-red-500">
                     <h3 class="font-bold text-red-700 mb-4 flex items-center gap-2"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Catat Pelanggaran</h3>
-                    
                     <label class="label-text">Jenis Pelanggaran</label>
                     <select id="pel-ket" class="input-field mb-4"></select>
-
                     <div class="relative mb-4">
                         <input type="text" id="pel-search" onkeyup="searchSantri('pel')" placeholder="Cari Nama Santri (Semua Gedung)..." class="input-field pl-9">
                         <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-3.5"></i>
                         <div id="pel-results" class="absolute z-10 w-full bg-white shadow-xl rounded-lg mt-1 max-h-48 overflow-y-auto hidden border"></div>
                     </div>
-
                     <div id="pel-cart" class="space-y-2 mb-4"></div>
-
-                    <!-- Kamera Pelanggaran -->
-                    <div class="cam-container h-48 mb-2">
+                    
+                    <div class="cam-container h-48 mb-2 relative">
                         <video id="vid-pel" class="w-full h-full object-cover hidden"></video>
                         <img id="img-pel" class="w-full h-full object-cover hidden rounded-lg">
                         <div id="cam-placeholder-pel" class="absolute inset-0 flex flex-col items-center justify-center text-gray-400">
-                            <i data-lucide="camera" class="w-8 h-8 mb-2"></i>
-                            <span class="text-xs">Foto Bukti (Wajib)</span>
+                            <i data-lucide="camera" class="w-8 h-8 mb-2"></i><span class="text-xs">Foto Bukti (Wajib)</span>
                         </div>
+                         <!-- CAM SWITCH BTN (No Default Front for Violation, usually back) -->
+                        <button onclick="toggleCam('vid-pel')" id="btn-switch-pel" class="absolute top-2 right-2 bg-white/80 p-2 rounded-full shadow hidden z-10 text-gray-700">
+                            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                        </button>
                     </div>
                     <div class="flex gap-2 mb-4">
-                        <button onclick="startCam('vid-pel', 'cam-placeholder-pel')" class="btn-secondary py-1 text-xs">Buka Kamera</button>
+                        <button onclick="startCam('vid-pel', 'cam-placeholder-pel', 'btn-switch-pel', false)" class="btn-secondary py-1 text-xs">Buka Kamera</button>
                         <button onclick="takeSnap('vid-pel', 'img-pel')" class="btn-secondary py-1 text-xs bg-red-100 text-red-700 border-red-200">Ambil Foto</button>
                     </div>
 
@@ -328,51 +322,44 @@
         const API_URL = "https://script.google.com/macros/s/AKfycbyZUCDpFskmp3JtrjYUcHDGdJ9SsZ_V6XhxXWVcEhREMU1K3zl8heM8eWu4gZWtBiiqaw/exec";
         const CLIENT_ID = "142276774829-q7b6vicbq1hm1ltng7itehietn03l119.apps.googleusercontent.com";
         
-        // --- STATE GLOBAL ---
         let state = {
             user: null,
             dropdowns: {},
-            santriCache: [], // Cache santri per syuqoh
-            cart: { telat: [], pel: [], daur: [] }
+            santriCache: [],
+            cart: { telat: [], pel: [], daur: [] },
+            camMode: 'user', // Default FRONT
+            stream: null
         };
 
-        // --- AUTO-LOGIN CHECK ---
         window.onload = () => {
             initAuth();
             lucide.createIcons();
-            
             const savedUser = localStorage.getItem('pondok_user_session');
             if (savedUser) {
                 try {
                     const parsed = JSON.parse(savedUser);
-                    if (parsed.email && parsed.nama) {
+                    if (parsed.email) {
                         state.user = parsed;
                         document.getElementById('auth-overlay').classList.add('hidden');
                         updateUIUser();
                         loadInitialData();
+                        checkAccessLevel(); // Cek Jabatan
                         showToast('success', 'Selamat datang kembali!');
                     }
                 } catch (e) { localStorage.removeItem('pondok_user_session'); }
             }
         };
 
-        // --- UI HELPERS (SIDEBAR) ---
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const backdrop = document.getElementById('sidebar-backdrop');
-            
             if (sidebar.classList.contains('-translate-x-full')) {
-                // Open
-                sidebar.classList.remove('-translate-x-full');
-                backdrop.classList.remove('hidden');
+                sidebar.classList.remove('-translate-x-full'); backdrop.classList.remove('hidden');
             } else {
-                // Close
-                sidebar.classList.add('-translate-x-full');
-                backdrop.classList.add('hidden');
+                sidebar.classList.add('-translate-x-full'); backdrop.classList.add('hidden');
             }
         }
 
-        // --- AUTH & INITIALIZATION ---
         function initAuth() {
             google.accounts.id.initialize({ client_id: CLIENT_ID, callback: handleLogin });
             google.accounts.id.renderButton(document.getElementById("google-btn-container"), { theme: "outline", size: "large" });
@@ -381,91 +368,83 @@
         async function handleLogin(res) {
             showToast('loading', 'Sedang masuk...');
             const payload = JSON.parse(atob(res.credential.split('.')[1]));
-            
             try {
                 const apiRes = await fetch(`${API_URL}?action=get_profile&email=${payload.email}&picture=${encodeURIComponent(payload.picture)}`);
                 const profile = await apiRes.json();
-                
                 if (profile.status === 'success') {
                     state.user = { ...payload, ...profile, picture: payload.picture };
                     localStorage.setItem('pondok_user_session', JSON.stringify(state.user));
-
                     document.getElementById('auth-overlay').classList.add('hidden');
                     updateUIUser();
                     loadInitialData();
-                } else {
-                    showToast('error', 'Email tidak terdaftar di DB Ustadz');
-                }
+                    checkAccessLevel(); // Cek Jabatan
+                } else { showToast('error', 'Email tidak terdaftar'); }
             } catch (e) { showToast('error', 'Gagal koneksi server'); }
         }
 
-        function logout() {
-            localStorage.removeItem('pondok_user_session');
-            location.reload();
-        }
+        function logout() { localStorage.removeItem('pondok_user_session'); location.reload(); }
 
         function updateUIUser() {
             document.getElementById('user-name').innerText = state.user.nama;
-            document.getElementById('user-syuqoh').innerText = `${state.user.gedung} - ${state.user.syuqoh}`;
+            document.getElementById('user-jabatan').innerText = state.user.jabatan;
             document.getElementById('user-photo').src = state.user.picture;
-            
-            // Update Home Dashboard
             document.getElementById('home-user-name').innerText = state.user.nama;
             document.getElementById('home-syuqoh').innerText = `${state.user.gedung} - ${state.user.syuqoh}`;
+            document.getElementById('home-jabatan').innerText = state.user.jabatan;
+        }
+
+        // --- CEK JABATAN (PENGAWASAN) ---
+        function checkAccessLevel() {
+            const isPengawas = (state.user.jabatan || "").toUpperCase().trim() === 'PENGAWAS';
+            const navBtn = document.getElementById('nav-pengawasan');
+            const cardBtn = document.getElementById('card-pengawasan');
+            
+            if (isPengawas) {
+                navBtn.classList.remove('hidden');
+                cardBtn.classList.remove('hidden');
+            } else {
+                navBtn.classList.add('hidden');
+                cardBtn.classList.add('hidden');
+            }
         }
 
         async function loadInitialData() {
             try {
-                // 1. Dropdowns
                 const res = await fetch(`${API_URL}?action=get_initial_data`);
                 state.dropdowns = await res.json();
-                
                 populateSelect('abs-ket', state.dropdowns.keterangan);
                 populateSelect('peng-daur', state.dropdowns.daur);
                 populateSelect('telat-jenis', state.dropdowns.jenis_keterlambatan);
                 populateSelect('pel-ket', state.dropdowns.pelanggaran);
                 populateSelect('daur-ket-bulk', state.dropdowns.keterangan);
-                populateSelect('telat-gedung', state.dropdowns.gedung); // Pastikan ini ada di backend jika belum
-
-                // 2. Load Santri Syuqoh
+                populateSelect('telat-gedung', state.dropdowns.gedung);
                 const resSantri = await fetch(`${API_URL}?action=get_santri_by_syuqoh&syuqoh=${state.user.syuqoh}`);
                 state.santriCache = await resSantri.json();
-                
-                initKonseling();
-                initDaur();
-                initPengawasan();
+                initKonseling(); initDaur(); initPengawasan();
             } catch (e) { console.error(e); }
         }
 
-        // --- LOGIC PER TAB (TIDAK DIUBAH, HANYA DIPANGGIL) ---
-        // 1. ABSENSI
         async function submitAbsensi() {
-            const ket = val('abs-ket');
-            const foto = getImgSrc('img-abs');
+            const ket = val('abs-ket'); const foto = getImgSrc('img-abs');
             if(!ket || !foto) return showToast('error', 'Isi keterangan & foto');
-            setLoading(true);
-            const loc = await getLoc();
+            setLoading(true); const loc = await getLoc();
             postData('save_absensi', { email: state.user.email, nama: state.user.nama, keterangan: ket, foto: foto, lokasi: loc }, () => {
-                val('abs-ket', ''); resetCam('img-abs', 'vid-abs', 'cam-placeholder-abs');
+                val('abs-ket', ''); resetCam('img-abs', 'vid-abs', 'cam-placeholder-abs', 'btn-switch-abs');
             });
         }
 
-        // 2. KONSELING
         function initKonseling() {
             const kamars = [...new Set(state.santriCache.map(s => s.kamar))].sort();
             populateSelect('kon-kamar', kamars);
         }
         function filterKonSantri() {
-            const kamar = val('kon-kamar');
-            const santriEl = document.getElementById('kon-santri');
+            const kamar = val('kon-kamar'); const santriEl = document.getElementById('kon-santri');
             santriEl.innerHTML = '<option value="">Pilih Santri</option>';
             state.santriCache.filter(s => s.kamar == kamar).forEach(s => santriEl.add(new Option(`${s.nama} (${s.nisn})`, s.nisn)));
             santriEl.disabled = false;
         }
         function submitKonseling() {
-            const nisn = val('kon-santri');
-            const kamar = val('kon-kamar');
-            const lap = val('kon-laporan');
+            const nisn = val('kon-santri'); const kamar = val('kon-kamar'); const lap = val('kon-laporan');
             if(!nisn || !lap) return showToast('error', 'Lengkapi data');
             const santri = state.santriCache.find(s => s.nisn == nisn);
             postData('save_konseling', { email: state.user.email, nama: state.user.nama, syuqoh: state.user.syuqoh, kamar_santri: kamar, nisn: nisn, nama_santri: santri.nama, laporan: lap }, () => {
@@ -473,9 +452,9 @@
             });
         }
 
-        // 3. PENGAWASAN
         async function initPengawasan() {
             const container = document.getElementById('list-musyrif');
+            // Hanya akses jika jabatan Pengawas, tapi load saja untuk safety
             try {
                 const res = await fetch(`${API_URL}?action=get_musyrif_by_gedung&gedung=${state.user.gedung}`);
                 const musyrifs = await res.json();
@@ -483,16 +462,13 @@
                     <div class="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
                         <span class="text-sm font-semibold">${m.nama}</span>
                         <select class="musyrif-input text-xs p-1 border rounded" data-id="${m.id}" data-nama="${m.nama}">
-                             <option value="">-Status-</option>
-                             ${state.dropdowns.keterangan.map(k => `<option value="${k}">${k}</option>`).join('')}
+                             <option value="">-Status-</option>${state.dropdowns.keterangan.map(k => `<option value="${k}">${k}</option>`).join('')}
                         </select>
                     </div>`).join('');
             } catch(e) { container.innerHTML = 'Gagal memuat musyrif'; }
         }
         function submitPengawasan() {
-            const daur = val('peng-daur');
-            const inputs = document.querySelectorAll('.musyrif-input');
-            let rows = [];
+            const daur = val('peng-daur'); const inputs = document.querySelectorAll('.musyrif-input'); let rows = [];
             inputs.forEach(inp => { if(inp.value) rows.push({ id_musyrif: inp.dataset.id, nama_musyrif: inp.dataset.nama, keterangan: inp.value }); });
             if(!daur || rows.length === 0) return showToast('error', 'Pilih Daur & min. 1 Musyrif');
             postData('save_pengawasan', { email: state.user.email, nama: state.user.nama, gedung: state.user.gedung, daur: daur, rows: rows }, () => {
@@ -500,7 +476,6 @@
             });
         }
 
-        // 4. DAUR
         function initDaur() {
             const container = document.getElementById('list-daur-santri');
             const sorted = state.santriCache.sort((a,b) => a.kamar - b.kamar);
@@ -521,8 +496,7 @@
             } else { area.classList.add('hidden'); }
         }
         function submitDaur() {
-            const ket = val('daur-ket-bulk');
-            const checked = document.querySelectorAll('.daur-chk:checked');
+            const ket = val('daur-ket-bulk'); const checked = document.querySelectorAll('.daur-chk:checked');
             if(!ket || checked.length === 0) return showToast('error', 'Pilih santri & keterangan');
             let rows = Array.from(checked).map(c => ({ nisn: c.value, nama_santri: c.dataset.nama, kamar: c.dataset.kamar, keterangan: ket }));
             postData('save_daur', { email: state.user.email, nama: state.user.nama, syuqoh: state.user.syuqoh, rows: rows }, () => {
@@ -530,11 +504,9 @@
             });
         }
 
-        // 5 & 6. SEARCH & CART
         let searchTimeout;
         async function searchSantri(type) {
-            const q = val(`${type}-search`);
-            const box = document.getElementById(`${type}-results`);
+            const q = val(`${type}-search`); const box = document.getElementById(`${type}-results`);
             if(q.length < 3) { box.classList.add('hidden'); return; }
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(async () => {
@@ -554,12 +526,7 @@
             }, 500);
         }
         function addToCart(type, nisn, nama, gedung) {
-            if(!state.cart[type].find(x => x.nisn == nisn)) {
-                state.cart[type].push({ nisn, nama, gedung });
-                renderCart(type);
-                document.getElementById(`${type}-search`).value = '';
-                document.getElementById(`${type}-results`).classList.add('hidden');
-            }
+            if(!state.cart[type].find(x => x.nisn == nisn)) { state.cart[type].push({ nisn, nama, gedung }); renderCart(type); document.getElementById(`${type}-search`).value = ''; document.getElementById(`${type}-results`).classList.add('hidden'); }
         }
         function renderCart(type) {
             const container = document.getElementById(`${type}-cart`);
@@ -569,8 +536,7 @@
         }
         function removeFromCart(type, nisn) { state.cart[type] = state.cart[type].filter(x => x.nisn != nisn); renderCart(type); }
         function submitTerlambat() {
-            const jenis = val('telat-jenis');
-            const gedung = val('telat-gedung');
+            const jenis = val('telat-jenis'); const gedung = val('telat-gedung');
             if(!jenis || state.cart.telat.length === 0) return showToast('error', 'Data belum lengkap');
             let rows = state.cart.telat.map(s => ({ nisn: s.nisn, nama_santri: s.nama }));
             postData('save_terlambat', { email: state.user.email, nama: state.user.nama, jenis: jenis, gedung: gedung, rows: rows }, () => {
@@ -578,33 +544,24 @@
             });
         }
         function submitPelanggaran() {
-            const ket = val('pel-ket');
-            const foto = getImgSrc('img-pel');
+            const ket = val('pel-ket'); const foto = getImgSrc('img-pel');
             if(!ket || !foto || state.cart.pel.length === 0) return showToast('error', 'Lengkapi data + foto');
             let rows = state.cart.pel.map(s => ({ nisn: s.nisn, nama_santri: s.nama, gedung: s.gedung }));
             postData('save_pelanggaran', { email: state.user.email, nama: state.user.nama, keterangan: ket, foto: foto, rows: rows }, () => {
-                state.cart.pel = []; renderCart('pel'); val('pel-ket', ''); resetCam('img-pel', 'vid-pel', 'cam-placeholder-pel');
+                state.cart.pel = []; renderCart('pel'); val('pel-ket', ''); resetCam('img-pel', 'vid-pel', 'cam-placeholder-pel', 'btn-switch-pel');
             });
         }
         function clearSearch() { state.cart.telat = []; renderCart('telat'); }
 
-        // --- CORE HELPERS ---
+        // --- HELPERS ---
         function nav(tab) {
-            // Jika di mobile, tutup sidebar saat menu diklik
-            if (window.innerWidth < 768) {
-                const sidebar = document.getElementById('sidebar');
-                if (!sidebar.classList.contains('-translate-x-full')) {
-                    toggleSidebar();
-                }
-            }
-
+            if (window.innerWidth < 768) { const sidebar = document.getElementById('sidebar'); if (!sidebar.classList.contains('-translate-x-full')) toggleSidebar(); }
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(`tab-${tab}`).classList.add('active');
             document.getElementById(`nav-${tab}`).classList.add('active');
             document.getElementById('mobile-title').innerText = tab === 'home' ? 'Home' : tab.charAt(0).toUpperCase() + tab.slice(1);
         }
-
         async function postData(action, payload, callback) {
             setLoading(true); payload.action = action;
             try {
@@ -615,54 +572,77 @@
             } catch(e) { showToast('error', 'Koneksi error'); }
             setLoading(false);
         }
-
         function val(id, v) { if(v !== undefined) document.getElementById(id).value = v; return document.getElementById(id).value; }
-        function populateSelect(id, arr) {
-            const el = document.getElementById(id);
-            // Jangan reset jika element tidak ditemukan
-            if (!el) return;
-            el.innerHTML = `<option value="">--Pilih--</option>`;
-            if(arr) arr.forEach(x => el.add(new Option(x, x)));
-        }
-        function setLoading(bool) {
-            const badge = document.getElementById('status-badge');
-            if(bool) badge.classList.remove('hidden'); else badge.classList.add('hidden');
-        }
+        function populateSelect(id, arr) { const el = document.getElementById(id); if (!el) return; el.innerHTML = `<option value="">--Pilih--</option>`; if(arr) arr.forEach(x => el.add(new Option(x, x))); }
+        function setLoading(bool) { const badge = document.getElementById('status-badge'); if(bool) badge.classList.remove('hidden'); else badge.classList.add('hidden'); }
         function showToast(type, msg) {
-            const t = document.getElementById('toast');
-            const i = document.getElementById('toast-icon');
+            const t = document.getElementById('toast'); const i = document.getElementById('toast-icon');
             document.getElementById('toast-msg').innerText = msg;
             i.className = `w-4 h-4 ${type === 'success' ? 'text-green-400' : 'text-red-400'}`;
             i.setAttribute('data-lucide', type === 'success' ? 'check-circle' : 'alert-circle');
             lucide.createIcons();
-            t.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
+            t.classList.remove('translate-y-20', 'opacity-0'); setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
         }
-        function startCam(vidId, placeId) {
+
+        // --- CAMERA LOGIC UPDATED ---
+        function startCam(vidId, placeId, btnSwitchId, defaultFront = true) {
             const vid = document.getElementById(vidId);
+            const btn = document.getElementById(btnSwitchId);
+            state.camMode = defaultFront ? 'user' : 'environment'; // Set default mode
+            
             document.getElementById(placeId).classList.add('hidden');
+            if(btn) btn.classList.remove('hidden');
             vid.classList.remove('hidden');
-            navigator.mediaDevices.getUserMedia({video: {facingMode: 'environment'}}).then(s => { vid.srcObject = s; vid.play(); });
+            
+            initStream(vid);
         }
+
+        function initStream(vid) {
+            if(state.stream) state.stream.getTracks().forEach(t => t.stop());
+            
+            navigator.mediaDevices.getUserMedia({video: {facingMode: state.camMode}}).then(s => {
+                state.stream = s;
+                vid.srcObject = s;
+                vid.play();
+            }).catch(e => showToast('error', 'Kamera error: ' + e));
+        }
+
+        function toggleCam(vidId) {
+            state.camMode = state.camMode === 'user' ? 'environment' : 'user';
+            const vid = document.getElementById(vidId);
+            initStream(vid);
+        }
+
         function takeSnap(vidId, imgId) {
             const vid = document.getElementById(vidId);
             const cvs = document.createElement('canvas');
             cvs.width = vid.videoWidth; cvs.height = vid.videoHeight;
-            cvs.getContext('2d').drawImage(vid, 0, 0);
+            const ctx = cvs.getContext('2d');
+            
+            // Mirror effect fix for front camera
+            if (state.camMode === 'user') {
+                ctx.translate(cvs.width, 0);
+                ctx.scale(-1, 1);
+            }
+            
+            ctx.drawImage(vid, 0, 0);
             const url = cvs.toDataURL('image/jpeg', 0.6);
             document.getElementById(imgId).src = url;
             document.getElementById(imgId).classList.remove('hidden');
             vid.classList.add('hidden');
-            if(vid.srcObject) vid.srcObject.getTracks().forEach(t => t.stop());
+            if(state.stream) state.stream.getTracks().forEach(t => t.stop());
         }
+
         function getImgSrc(imgId) { const src = document.getElementById(imgId).src; return src.includes('base64') ? src : null; }
-        function resetCam(imgId, vidId, placeId) {
+        
+        function resetCam(imgId, vidId, placeId, btnSwitchId) {
             document.getElementById(imgId).src = ''; document.getElementById(imgId).classList.add('hidden');
-            document.getElementById(vidId).classList.add('hidden'); document.getElementById(placeId).classList.remove('hidden');
+            document.getElementById(vidId).classList.add('hidden'); 
+            document.getElementById(placeId).classList.remove('hidden');
+            if(btnSwitchId) document.getElementById(btnSwitchId).classList.add('hidden');
         }
-        function getLoc() {
-            return new Promise(resolve => { navigator.geolocation.getCurrentPosition(p => resolve(`${p.coords.latitude},${p.coords.longitude}`), () => resolve("Lokasi tidak dizinkan")); });
-        }
+
+        function getLoc() { return new Promise(resolve => { navigator.geolocation.getCurrentPosition(p => resolve(`${p.coords.latitude},${p.coords.longitude}`), () => resolve("Lokasi tidak dizinkan")); }); }
     </script>
 </body>
 </html>
