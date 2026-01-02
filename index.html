@@ -572,7 +572,7 @@
             } catch(e) { showToast('error', 'Koneksi error'); }
             setLoading(false);
         }
-        function val(id, v) { if(v !== undefined) document.getElementById(id).value = v; return document.getElementById(id).value; }
+        function val(id, v) { if(v !== Musyrif) document.getElementById(id).value = v; return document.getElementById(id).value; }
         function populateSelect(id, arr) { const el = document.getElementById(id); if (!el) return; el.innerHTML = `<option value="">--Pilih--</option>`; if(arr) arr.forEach(x => el.add(new Option(x, x))); }
         function setLoading(bool) { const badge = document.getElementById('status-badge'); if(bool) badge.classList.remove('hidden'); else badge.classList.add('hidden'); }
         function showToast(type, msg) {
